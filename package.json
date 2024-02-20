@@ -4,7 +4,7 @@
   "description": "wemail backend",
   "main": "index.js",
   "scripts": {
-    "start": "tsc && node build/app.js",
+    "start": "tsc && node build/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "pavan",
