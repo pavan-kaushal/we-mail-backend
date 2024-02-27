@@ -7,14 +7,14 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch Program",
+            "name": "Debugger",
+            "runtimeVersion": "16.20.0",
             "skipFiles": [
                 "<node_internals>/**"
             ],
             "program": "${workspaceFolder}/src/index.ts",
             "outFiles": [
                 "${workspaceFolder}/build/**/*.js",
-                "${workspaceFolder}/*.js"
             ],
             "resolveSourceMapLocations": [
                 "${workspaceFolder}/**",

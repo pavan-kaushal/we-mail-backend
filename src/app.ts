@@ -2,7 +2,7 @@ import { Server } from '@overnightjs/core';
 import { TestController } from './controllers/test';
 import { config } from './environment.config';
 import mongoose from 'mongoose';
-//setup debugger
+//setup debugger -> DONE
 //cors
 //login middleware
 //db connection -> DONE
