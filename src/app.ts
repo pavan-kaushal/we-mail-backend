@@ -25,7 +25,7 @@ class App extends Server {
                 config.dbpassword + '@' + config.dbhost +
                 '/' + config.dbname + '?authSource=' + config.dbsource
         }
-        console.log(dbUrl)
+
         try {
             mongoose.connection.on('connected', () => { console.log('Db connected'); });
             mongoose.connection.on('close', () => { console.log('lost Db connection'); });
