@@ -1,7 +1,7 @@
 import { Server } from '@overnightjs/core';
 import { TestController } from './controllers/test';
 import { config } from './environment.config';
-const mongoose = require('mongoose')
+import mongoose from 'mongoose';
 //setup debugger
 //cors
 //login middleware
