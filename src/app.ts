@@ -1,7 +1,8 @@
 import { Server } from '@overnightjs/core';
-import { TestController } from './controllers/test';
+import { AuthController } from './controllers/auth.controller';
 import { config } from './environment.config';
 import mongoose from 'mongoose';
+import * as express from 'express';
 //setup debugger -> DONE
 //cors
 //login middleware
@@ -14,8 +15,14 @@ class App extends Server {
         this.connectDb();
     }
 
-    private corsPolicy(){
-
+    private corsPolicy() {
+        express.Router()
+        this.app.use((req, res, next) => {
+            res.header("Access-Control-Allow-Origin", "*");
+            res.header("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE,OPTIONS");
+            res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, user, authorization");
+            next();
+        });
     }
 
     async connectDb() {
@@ -41,7 +48,7 @@ class App extends Server {
     }
 
     loadControllers() {
-        super.addControllers([new TestController()])
+        super.addControllers([new AuthController()])
     }
 
     public start() {
