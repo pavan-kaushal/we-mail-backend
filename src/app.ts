@@ -1,17 +1,31 @@
 import { Server } from '@overnightjs/core';
 import { AuthController } from './controllers/auth.controller';
-import { config } from './environment.config';
+import config from "./environment.config";
 import mongoose from 'mongoose';
 import * as express from 'express';
+import { RecipientController } from './controllers/recipient.controller';
+import { decodeTokenFromHeaders } from './utils/helper-functions';
+import responseMiddleware from './utils/response.middleware';
+import { RESPONSE_CODES } from './enums/enums';
+import morgan from 'morgan';
+import { EventController } from './controllers/event.controller';
+import { info } from 'node:console';
+import environmentConfig from './environment.config';
+import jwt from 'jsonwebtoken';
 //setup debugger -> DONE
-//cors
-//login middleware
+//cors -> DONE
+//login middleware/ jwt -> DONE
 //db connection -> DONE
+//api call logs 
+
 class App extends Server {
     port = config.port
+    jwtEscapeUrls = ['/auth/signin','/auth/signup'];
+
     constructor(){
         super();
-        this.corsPolicy()
+        this.corsPolicy();
+        this.middleware();
         this.connectDb();
     }
 
@@ -23,6 +37,46 @@ class App extends Server {
             res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, user, authorization");
             next();
         });
+    }
+
+    private middleware() {
+        this.app.enable('trust proxy');
+        this.app.use(express.json({ limit: '1024mb' }));
+        this.app.use(express.urlencoded({ extended: false }));
+        //logs for API calls
+        if(environmentConfig.environment=='development'){
+            this.app.use(morgan('dev', { stream: { write: msg => info(msg) } }));
+        } else {
+            this.app.use(morgan('combined', { stream: { write: msg => info(msg) } }));
+        }
+        this.app.use((req, res, next) => {
+            if(this.jwtEscapeUrls.includes(req.path)){
+                next();
+            } else {
+                if(!req?.headers?.authorization){
+                    if(req.method=='OPTIONS'){
+                        next();
+                    } else {
+                        responseMiddleware(res,false,"Auth Error",RESPONSE_CODES.TOKEN_EXPIRED);
+                    }
+                } else {
+                    try {
+                        const decodedToken = decodeTokenFromHeaders(req.headers.authorization as string)
+                        const expiryDate = new Date(decodedToken.exp * 1000);
+                        const currentDateUTC = new Date().toISOString();
+                        const token = req.headers.authorization.substring('Bearer '.length);
+                        jwt.verify(token, config.authJwtSecret, {ignoreExpiration: true});
+                        if (expiryDate.toISOString() < currentDateUTC) {
+                            throw Error("Token Expired")
+                        } else {
+                            next();
+                        }
+                    } catch (error) {
+                        responseMiddleware(res,false,"Auth Error",RESPONSE_CODES.TOKEN_EXPIRED)
+                    }
+                }
+            }
+        })
     }
 
     async connectDb() {
@@ -48,7 +102,11 @@ class App extends Server {
     }
 
     loadControllers() {
-        super.addControllers([new AuthController()])
+        super.addControllers([
+            new AuthController(),
+            new RecipientController(),
+            new EventController()
+        ])
     }
 
     public start() {
