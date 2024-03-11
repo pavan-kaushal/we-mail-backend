@@ -12,6 +12,7 @@ import { EventController } from './controllers/event.controller';
 import { info } from 'node:console';
 import environmentConfig from './environment.config';
 import jwt from 'jsonwebtoken';
+import moment from 'moment';
 //setup debugger -> DONE
 //cors -> DONE
 //login middleware/ jwt -> DONE
@@ -62,11 +63,11 @@ class App extends Server {
                 } else {
                     try {
                         const decodedToken = decodeTokenFromHeaders(req.headers.authorization as string)
-                        const expiryDate = new Date(decodedToken.exp * 1000);
-                        const currentDateUTC = new Date().toISOString();
+                        const expiryDateUTC = moment(new Date(decodedToken.exp * 1000)).utcOffset("+5:30");
+                        const currentDateUTC = moment().utcOffset("+5:30");
                         const token = req.headers.authorization.substring('Bearer '.length);
                         jwt.verify(token, config.authJwtSecret, {ignoreExpiration: true});
-                        if (expiryDate.toISOString() < currentDateUTC) {
+                        if (expiryDateUTC.isBefore(currentDateUTC)) {
                             throw Error("Token Expired")
                         } else {
                             next();
