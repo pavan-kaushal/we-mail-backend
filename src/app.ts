@@ -13,6 +13,7 @@ import { info } from 'node:console';
 import environmentConfig from './environment.config';
 import jwt from 'jsonwebtoken';
 import moment from 'moment';
+import { EmailIdentityController } from './controllers/email-identity.controller';
 //setup debugger -> DONE
 //cors -> DONE
 //login middleware/ jwt -> DONE
@@ -50,6 +51,7 @@ class App extends Server {
         } else {
             this.app.use(morgan('combined', { stream: { write: msg => info(msg) } }));
         }
+        //JWT Middleware
         this.app.use((req, res, next) => {
             if(this.jwtEscapeUrls.includes(req.path)){
                 next();
@@ -58,7 +60,7 @@ class App extends Server {
                     if(req.method=='OPTIONS'){
                         next();
                     } else {
-                        responseMiddleware(res,false,"Auth Error",RESPONSE_CODES.TOKEN_EXPIRED);
+                        responseMiddleware(res,false,"Authorization Required",null,RESPONSE_CODES.TOKEN_EXPIRED);
                     }
                 } else {
                     try {
@@ -68,12 +70,12 @@ class App extends Server {
                         const token = req.headers.authorization.substring('Bearer '.length);
                         jwt.verify(token, config.authJwtSecret, {ignoreExpiration: true});
                         if (expiryDateUTC.isBefore(currentDateUTC)) {
-                            throw Error("Token Expired")
+                            throw Error("Authorization Expired")
                         } else {
                             next();
                         }
-                    } catch (error) {
-                        responseMiddleware(res,false,"Auth Error",RESPONSE_CODES.TOKEN_EXPIRED)
+                    } catch (error: any) {
+                        responseMiddleware(res,false,error.message,error,RESPONSE_CODES.TOKEN_EXPIRED)
                     }
                 }
             }
@@ -106,7 +108,8 @@ class App extends Server {
         super.addControllers([
             new AuthController(),
             new RecipientController(),
-            new EventController()
+            new EventController(),
+            new EmailIdentityController(),
         ])
     }
 
