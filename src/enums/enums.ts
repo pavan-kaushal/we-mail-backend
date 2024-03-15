@@ -1,4 +1,4 @@
 export enum RESPONSE_CODES {
-    TOKEN_EXPIRED = 401,
+    TOKEN_EXPIRED = 1001,
     DEFAULT = 400
 }
