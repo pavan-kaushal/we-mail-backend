@@ -1,14 +1,15 @@
-import {Model , model, Document, Schema} from 'mongoose';
+import {Model , model, Document, Schema, Types} from 'mongoose';
+import { IEmailIdentity } from './email-identity.model';
 
 export interface IUser extends Document {
     name : string,
-    email : string,
+    emailIdentity: Types.ObjectId | IEmailIdentity
     password: string,
 }
 
 const userSchema = new Schema({
     name:{ type:Schema.Types.String, required:true, trim:true},
-    email:{ type:Schema.Types.String, required:true, trim:true},
+    emailIdentity: { type:Schema.Types.ObjectId, required:true, ref: 'EmailIdentity'},
     password: { type: Schema.Types.String, required:true, trim:true},
 },{
     timestamps: true,

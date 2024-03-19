@@ -1,7 +1,9 @@
+import { Types } from "mongoose";
 import environmentConfig from "../environment.config";
 import { IUser, User } from "../models/user.model"
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { EmailIdentity } from "../models/email-identity.model";
 
 const generateToken = (payload: {
     _id: string,
@@ -13,19 +15,23 @@ const generateToken = (payload: {
 }
 
 export const userSignin = async (email: string, password: string) => {
-    const user = await User.findOne({
+    const emailIdentity = await EmailIdentity.findOne({
         email: email,
-    }).lean();
-    if(!user){
+    }).populate('user').lean();
+    if(!emailIdentity){
         throw Error("Invalid Credentials")
     }
+    if(!emailIdentity.isVerified){
+        throw Error("Email not Verified")
+    }
+    const user = emailIdentity.user as IUser;
     if(!bcrypt.compareSync(password,user.password)){
         throw Error("Wrong Password")
     }
     const authToken = generateToken({
         _id: user._id.toString(),
         name: user.name,
-        email: user.email,
+        email: emailIdentity.email,
     })
     
     return {authToken}
@@ -39,16 +45,25 @@ const hashPassword = async (password: string) => {
 }
 
 export const userSignup = async (name: string, email: string, password: string) => {
-   const existingUserDoc = await User.findOne({
+   const existingEmailDoc = await EmailIdentity.findOne({
     email: email
    }).lean();
-   if(existingUserDoc){
-    throw Error(`Another User With Email Exists`)
+   if(existingEmailDoc){
+    throw Error(`Email Already in use`)
    }
    password = await hashPassword(password)
-   await User.create({
+   const emailIdentity = await EmailIdentity.create({
+        email: email,
+        isVerified: true,
+   })
+   const user = await User.create({
     name: name,
-    email: email,
     password: password,
+    emailIdentity: emailIdentity._id
    });
+   await EmailIdentity.findByIdAndUpdate(emailIdentity._id,{
+    $set: {
+        user: user._id
+    }
+   })
 }

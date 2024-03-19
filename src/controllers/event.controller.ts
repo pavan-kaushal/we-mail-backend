@@ -10,14 +10,14 @@ export class EventController {
     @Post('')
     async updateEventDetails(req: Request, res: Response){
         try {
-            let {name, id, email, description, attributes} = req.body;
+            let {name, _id, emailIdentity, description, attributes} = req.body;
             const userData = decodeTokenFromHeaders(req.headers.authorization as string);
-            if(!name || !id || !email || !description || !userData?._id || !attributes) {
+            if(!name || !_id || !emailIdentity || !description || !userData?._id || !attributes) {
                 throw Error("Invalid Request")
             }
-            id = new Types.ObjectId(id as string)
-            await updateEventDetails(id, new Types.ObjectId(userData?._id as string), name, email, description, attributes)
-            responseMiddleware(res,true,'',null)
+            _id = new Types.ObjectId(_id as string)
+            await updateEventDetails(_id, new Types.ObjectId(userData?._id as string), name, new Types.ObjectId(emailIdentity as string), description, attributes)
+            responseMiddleware(res,true,'Event Updated Successfully',null)
         } catch (error: any) {
             responseMiddleware(res,false,error.message,error)
         }
@@ -33,7 +33,7 @@ export class EventController {
             event = new Types.ObjectId(event as string)
             users = users.map((id: string) => new Types.ObjectId(id))
             await updateEventRecipients(event, users)
-            responseMiddleware(res,true,'',null)
+            responseMiddleware(res,true,'Recipients Updated Successfully',null)
         } catch (error: any) {
             responseMiddleware(res,false,error.message,error)
         }
@@ -42,13 +42,13 @@ export class EventController {
     @Put('')
     async addEvent(req: Request, res: Response){
         try {
-            let {name, email, description, attributes} = req.body;
+            let {name, emailIdentity, description, attributes} = req.body;
             const userData = decodeTokenFromHeaders(req.headers.authorization as string);
-            if(!name || !email || !description || !userData?._id || !attributes) {
+            if(!name || !emailIdentity || !description || !userData?._id || !attributes) {
                 throw Error("Invalid Request")
             }
-            await addEvent(new Types.ObjectId(userData?._id as string), name, email, description, attributes)
-            responseMiddleware(res,true,'',null)
+            await addEvent(new Types.ObjectId(userData?._id as string), name, new Types.ObjectId(emailIdentity as string), description, attributes)
+            responseMiddleware(res,true,'Event Added Successfully',null)
         } catch (error: any) {
             responseMiddleware(res,false,error.message,error)
         }
@@ -62,7 +62,7 @@ export class EventController {
                 throw Error("Invalid Request")
             }
             await deleteEvent(new Types.ObjectId(id))
-            responseMiddleware(res,true,'',null)
+            responseMiddleware(res,true,'Event Deleted Successfully',null)
         } catch (error: any) {
             responseMiddleware(res,false,error.message,error)
         }
@@ -75,7 +75,7 @@ export class EventController {
             if(!userData?._id) {
                 throw Error("Invalid Request")
             }
-            const data = getEventsOfUser(new Types.ObjectId(userData._id as string))
+            const data = await getEventsOfUser(new Types.ObjectId(userData._id as string))
             responseMiddleware(res,true,'',data)
         } catch (error: any) {
             responseMiddleware(res,false,error.message,error)

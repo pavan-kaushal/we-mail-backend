@@ -2,7 +2,7 @@ import { Types } from "mongoose";
 import { Event } from "../models/event.model";
 import { formatRegex } from "../utils/helper-functions";
 
-export const addEvent = async (user: Types.ObjectId, name: string, email: string, description: string, attributes: string) => {
+export const addEvent = async (user: Types.ObjectId, name: string, emailIdentity: Types.ObjectId, description: string, attributes: string) => {
     const existingEventDoc = await Event.findOne({
         user: user,
         name: {
@@ -15,13 +15,13 @@ export const addEvent = async (user: Types.ObjectId, name: string, email: string
     await Event.create({
         user: user,
         name: name,
-        email: email,
+        emailIdentity: emailIdentity,
         description: description,
         attributes: attributes.split(',').map(item => item.trim())
     })
 }
 
-export const updateEventDetails = async (id: Types.ObjectId, user: Types.ObjectId, name: string, email: string, description: string, attribtues: string) => {
+export const updateEventDetails = async (id: Types.ObjectId, user: Types.ObjectId, name: string, emailIdentity: Types.ObjectId, description: string, attributes: string) => {
     const existingEventDoc = await Event.findOne({
         user: user,
         name: {
@@ -36,13 +36,14 @@ export const updateEventDetails = async (id: Types.ObjectId, user: Types.ObjectI
     await Event.findByIdAndUpdate(id, {
         user: user,
         name: name,
-        email: email,
-        description: description
+        emailIdentity: emailIdentity,
+        description: description,
+        attributes: attributes.split(',').map(item => item.trim())
     })
 }
 
 export const deleteEvent = async (id: Types.ObjectId) => {
-
+    await Event.findByIdAndDelete(id)
 }
 
 export const updateEventRecipients = async (eventId: Types.ObjectId, userIds: Types.ObjectId[]) => {
