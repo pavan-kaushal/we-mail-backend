@@ -13,17 +13,17 @@ interface IConfig {
 }
 
 class Config implements IConfig {
-    readonly environment = process.env.environment || 'development'
-    readonly port = process.env.PORT || 3000;
-    readonly authJwtSecret = process.env.authJwtSecret || 'yo-its-a-secret';
-    readonly authJwtExpireTime = process.env.authJwtExpireTime || '6h';
-    readonly dbhost = process.env.dbhost || 'localhost';
-    readonly dbusername = process.env.dbusername || '';
-    readonly dbpassword = process.env.dbpassword || '';
-    readonly dbname = process.env.dbname || 'wemail-db';
-    readonly dbsource = process.env.dbsource || 'admin';
-    readonly timezone = process.env.timezone || 'Asia/Kolkata';
-    readonly saltRounds = process.env.saltRounds || 2;
+    readonly environment = process.env.environment
+    readonly port = process.env.PORT;
+    readonly authJwtSecret = process.env.authJwtSecret;
+    readonly authJwtExpireTime = process.env.authJwtExpireTime;
+    readonly dbhost = process.env.dbhost;
+    readonly dbusername = process.env.dbusername;
+    readonly dbpassword = process.env.dbpassword;
+    readonly dbname = process.env.dbname ;
+    readonly dbsource = process.env.dbsource;
+    readonly timezone = process.env.timezone;
+    readonly saltRounds = process.env.saltRounds;
 
     public get config(): IConfig{
         return this;

@@ -1,3 +1,4 @@
+require('dotenv').config('../.env');
 import { Server } from '@overnightjs/core';
 import { AuthController } from './controllers/auth.controller';
 import config from "./environment.config";
