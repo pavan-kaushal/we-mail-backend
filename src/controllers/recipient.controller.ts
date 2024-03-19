@@ -15,7 +15,7 @@ export class RecipientController {
                 throw Error("Invalid Request")
             }
             await updateRecipient(new Types.ObjectId(id as string),name,email);
-            responseMiddleware(res,true,'',null)
+            responseMiddleware(res,true,'Recipient Updated',null)
         } catch (error: any) {
             responseMiddleware(res,false,error.message,error)
         }
@@ -30,7 +30,7 @@ export class RecipientController {
                 throw Error("Invalid Request")
             }
             await addRecipient(new Types.ObjectId(userData?._id as string),name,email)
-            responseMiddleware(res,true,'',null)
+            responseMiddleware(res,true,'Recipient Added',null)
         } catch (error: any) {
             responseMiddleware(res,false,error.message,error)
         }
@@ -44,7 +44,7 @@ export class RecipientController {
                 throw Error("Invalid Request")
             }
             await deleteRecipient(new Types.ObjectId(id as string))
-            responseMiddleware(res,true,'',null)
+            responseMiddleware(res,true,'Recipient Deleted',null)
         } catch (error: any) {
             responseMiddleware(res,false,error.message,error)
         }
