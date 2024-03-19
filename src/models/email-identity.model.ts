@@ -1,27 +1,22 @@
 import {Model , model, Document, Schema, Types} from 'mongoose';
 import { IUser } from './user.model';
 
-export enum EMAIL_IDENTITY_TYPES {
-    PRIMARY = 'PRIMARY',
-    SECONDARY = 'SECONDARY',
-}
-
 export interface IEmailIdentity extends Document {
     user: Types.ObjectId | IUser,
-    type: EMAIL_IDENTITY_TYPES,
     email: string,
+    isVerified: boolean,
 }
 
 const emailIdentitySchema = new Schema({
-    user: {type: Schema.Types.ObjectId, required: true, ref:'User'},
-    type: {type: Schema.Types.String, required: true, enum: Object.values(EMAIL_IDENTITY_TYPES) },
+    user: {type: Schema.Types.ObjectId, ref:'User', default: null},
     email: {type: Schema.Types.String, required:true, trim:true},
+    isVerified: {type: Schema.Types.Boolean, required:true, default: false},
 },{
     timestamps: true,
     versionKey: false
 })
 
 emailIdentitySchema.index({email: 1},{unique: true});
-emailIdentitySchema.index({user:1, type:1});
+emailIdentitySchema.index({user:1});
 
 export const EmailIdentity : Model<IEmailIdentity> = model<IEmailIdentity>('EmailIdentity',emailIdentitySchema);
