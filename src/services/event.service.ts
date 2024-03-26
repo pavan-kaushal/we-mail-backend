@@ -57,3 +57,7 @@ export const updateEventRecipients = async (eventId: Types.ObjectId, userIds: Ty
 export const getEventsOfUser = async (userId: Types.ObjectId) => {
     return await Event.find({user: userId}).sort({_id: 1}).lean();
 }
+
+export const getEventDetails = async (id: Types.ObjectId) => {
+    return await Event.findById(id).lean();
+}

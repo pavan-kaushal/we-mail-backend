@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 import responseMiddleware from "../utils/response.middleware";
 import { Types } from "mongoose";
 import { decodeTokenFromHeaders } from "../utils/helper-functions";
-import { addEvent, deleteEvent, getEventsOfUser, updateEventDetails, updateEventRecipients } from "../services/event.service";
+import { addEvent, deleteEvent, getEventDetails, getEventsOfUser, updateEventDetails, updateEventRecipients } from "../services/event.service";
 
 @Controller('event')
 export class EventController {
@@ -76,6 +76,20 @@ export class EventController {
                 throw Error("Invalid Request")
             }
             const data = await getEventsOfUser(new Types.ObjectId(userData._id as string))
+            responseMiddleware(res,true,'',data)
+        } catch (error: any) {
+            responseMiddleware(res,false,error.message,error)
+        }
+    }
+
+    @Get('event/:id')
+    async getEventDetails(req: Request, res: Response){
+        try {
+            let {id} = req.params;
+            if(!id){
+                throw Error("Invalid Request")
+            }
+            const data = await getEventDetails(new Types.ObjectId(id as string))
             responseMiddleware(res,true,'',data)
         } catch (error: any) {
             responseMiddleware(res,false,error.message,error)
