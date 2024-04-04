@@ -9,6 +9,7 @@ export interface IEvent extends Document {
     description : string,
     recipients : Types.ObjectId[] | IRecipient[],
     attributes: string[],
+    apiKey: string,
 }
 
 const eventSchema = new Schema({
@@ -17,7 +18,8 @@ const eventSchema = new Schema({
     emailIdentity:{ type:Schema.Types.ObjectId, required:true, ref: 'EmailIdentity'},
     description:{ type:Schema.Types.String, required:true, trim:true},
     recipients: [{type: Schema.Types.ObjectId, ref: 'Recipient'}],
-    attributes: [{type: Schema.Types.String, trim: true}]
+    attributes: [{type: Schema.Types.String, trim: true}],
+    apiKey: [{type: Schema.Types.String, trim: true}],
 },{
     timestamps: true,
     versionKey: false

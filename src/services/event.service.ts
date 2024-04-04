@@ -1,8 +1,12 @@
 import { Types } from "mongoose";
 import { Event } from "../models/event.model";
 import { formatRegex } from "../utils/helper-functions";
+const crypto = require('crypto');
 
 export const addEvent = async (user: Types.ObjectId, name: string, emailIdentity: Types.ObjectId, description: string, attributes: string) => {
+    const randomBytes = crypto.randomBytes(32); 
+    const randomHexString = randomBytes.toString('hex');
+
     const existingEventDoc = await Event.findOne({
         user: user,
         name: {
@@ -17,7 +21,8 @@ export const addEvent = async (user: Types.ObjectId, name: string, emailIdentity
         name: name,
         emailIdentity: emailIdentity,
         description: description,
-        attributes: attributes.split(',').map(item => item.trim())
+        attributes: attributes.split(',').map(item => item.trim()),
+        apiKey: randomHexString,
     })
 }
 
