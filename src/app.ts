@@ -16,11 +16,6 @@ import jwt from 'jsonwebtoken';
 import moment from 'moment';
 import { EmailIdentityController } from './controllers/email-identity.controller';
 import { UserDataController } from './controllers/user-data.controller';
-//setup debugger -> DONE
-//cors -> DONE
-//login middleware/ jwt -> DONE
-//db connection -> DONE
-//api call logs 
 
 class App extends Server {
     port = config.port
@@ -47,13 +42,11 @@ class App extends Server {
         this.app.enable('trust proxy');
         // this.app.use(express.json({ limit: '1024mb' }));
         this.app.use(express.urlencoded({ extended: false }));
-        //logs for API calls
         if(environmentConfig.environment=='development'){
             this.app.use(morgan('dev', { stream: { write: msg => info(msg) } }));
         } else {
             this.app.use(morgan('combined', { stream: { write: msg => info(msg) } }));
         }
-        //JWT Middleware
         this.app.use((req, res, next) => {
             if(this.jwtEscapeUrls.includes(req.path)){
                 next();
