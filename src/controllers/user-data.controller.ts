@@ -20,7 +20,7 @@ export class UserDataController {
     }
 
     @Post('upload')
-    @Middleware([multer().none()])
+    @Middleware([multer().single('excel')])
     async addUser(req: Request, res: Response){
         try {
             console.log(req)

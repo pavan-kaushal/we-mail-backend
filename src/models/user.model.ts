@@ -1,4 +1,4 @@
-import {Model , model, Document, Schema, Types} from 'mongoose';
+import {Model ,model, Document, Schema, Types} from 'mongoose';
 import { IEmailIdentity } from './email-identity.model';
 
 export interface IUser extends Document {

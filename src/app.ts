@@ -16,6 +16,7 @@ import jwt from 'jsonwebtoken';
 import moment from 'moment';
 import { EmailIdentityController } from './controllers/email-identity.controller';
 import { UserDataController } from './controllers/user-data.controller';
+import { AttributeController } from './controllers/attributes.controller';
 
 class App extends Server {
     port = config.port
@@ -105,6 +106,7 @@ class App extends Server {
             new RecipientController(),
             new EventController(),
             new EmailIdentityController(),
+            new AttributeController(),
             new UserDataController()
         ])
     }
